@@ -16,6 +16,47 @@ const cartReducer = (state, action) => {
       totalAmount: updatedTotalAmount
     };
   }
+
+   if (action.type === 'REMOVE') {
+
+    const existingItemIndex = state.items.findIndex(
+      (item) => item.id === action.id
+    );
+
+    const existingItem = state.items[existingItemIndex];
+
+    // If item doesn't exist, return current state
+    if (!existingItem) {
+      return state;
+    }
+
+    let updatedItems;
+
+    // If quantity is 1, remove the item completely
+    if (existingItem.amount === 1) {
+
+      updatedItems = state.items.filter(
+        (item) => item.id !== action.id
+      );
+
+    } else {
+
+      // Otherwise reduce quantity by 1
+      const updatedItem = {
+        ...existingItem,
+        amount: existingItem.amount - 1
+      };
+
+      updatedItems = [...state.items];
+      updatedItems[existingItemIndex] = updatedItem;
+    }
+
+    return {
+      items: updatedItems,
+      totalAmount: state.totalAmount - existingItem.price
+    };
+  }
+
   return defaultCartState;
 };
 
